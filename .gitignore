@@ -1,0 +1,25 @@
+/.vscode
+./vscode
+.vscode/
+
+# Build output
+*.o
+*.a
+*.so
+*.txt
+# Archives
+*.zip
+*.tar
+*.tar.gz
+
+# Logs
+*.log
+
+# Legacy
+legacy/
+
+# Python cache
+__pycache__/
+*.pyc
+.sh
+.env

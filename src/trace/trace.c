@@ -1,0 +1,115 @@
+#include "trace.h"
+
+void syscall_exit(struct user_regs_struct *regs, TableElement* t)
+{
+    if ((long long)SYSCALL_RET < 0){
+        t->errs += 1;
+        if (showErrs){
+            printf(
+                "syscall %lld exited with code = %lld: %s\n",
+                SYSCALL_NUM,
+                -SYSCALL_RET,
+                strerror(-SYSCALL_RET)
+            );
+        }
+    }
+}
+
+void syscall_entry(pid_t pid, struct user_regs_struct *regs)
+{
+    long l_syscall = SYSCALL_NUM;
+    const char *sys_name = syscall_names_arr[l_syscall];
+    printf("\n[SYSCALL] %s | rdi=%lld | rsi=%p | rdx=%lld\n",
+        sys_name,
+        SYSCALL_ARG1,
+        (void*)SYSCALL_ARG2,
+        SYSCALL_ARG3
+    );
+    syscall_print(pid, regs, sys_name);
+}
+
+void trace_loop(pid_t pid, List* stats)
+{
+    short in_syscall = 0;
+    int status = 0;
+
+    while (1){
+        waitpid(pid, &status, 0);
+        if (WIFEXITED(status)) break;
+
+        struct timespec time_start;
+        clock_gettime(CLOCK_MONOTONIC, &time_start);
+
+        struct user_regs_struct regs;
+        ptrace(PTRACE_GETREGS, pid, 0, &regs);
+
+        TableElement* t = findElementById(stats, regs.orig_rax);
+
+        if (!t){
+            TableElement new_elem = {
+                .syscall_id   = regs.orig_rax,
+                .syscall_name = syscall_names_arr[regs.orig_rax],
+                .calls        = 1,
+                .errs         = 0,
+                .time_spent   = 0
+            };
+
+            appendToList(stats, new_elem);
+            t = &stats->elements[stats->used_size - 1];
+        } else {
+            t->calls += 1;
+        }
+
+        if (!in_syscall){
+            syscall_entry(pid, &regs);  
+            in_syscall = 1;
+        } else {
+            syscall_exit(&regs, t);
+            in_syscall = 0;
+        }
+
+        struct timespec time_end;
+        clock_gettime(CLOCK_MONOTONIC, &time_end);
+
+        t->time_spent += (double)(time_end.tv_sec  - time_start.tv_sec)
+                       + (time_end.tv_nsec - time_start.tv_nsec) / 1e9;
+
+        ptrace(PTRACE_SYSCALL, pid, 0, 0);
+    }
+}
+
+void start_trace(char *prog, char **argv)
+{
+    printf("start_trace\n");
+    List stats;
+    initList(&stats, DEFAULT_LIST_SIZE);
+
+    pid_t pid = fork();
+    if (pid == -1){
+        perror("process create error");
+        exit(1);
+    }
+
+    if (pid == 0){
+        if (ptrace(PTRACE_TRACEME, 0, 0, 0) == -1){
+            perror("ptrace PTRACE");
+            exit(1);
+        }
+        raise(SIGSTOP);
+        execvp(prog, argv);
+        perror("execvp");
+        exit(1);
+    } else {
+        int status;
+        waitpid(pid, &status, 0);
+
+        if (ptrace(PTRACE_SYSCALL, pid, 0, 0) == -1){
+            perror("ptrace SYSCALL");
+            exit(1);
+        }
+
+        trace_loop(pid, &stats);
+    }
+    print_stats_table(&stats);
+    freeList(&stats);
+}
