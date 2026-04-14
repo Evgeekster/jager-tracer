@@ -23,3 +23,7 @@ __pycache__/
 *.pyc
 .sh
 .env
+
+#any ai generated better exaples 
+./jager_new/
+/jager_new/

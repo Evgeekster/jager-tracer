@@ -52,7 +52,7 @@ void syscall_print(pid_t pid, struct user_regs_struct *regs, const char *sys_nam
 
 TableElement* findElementById(List* l, int id){
 
-    for (int i = 0; i < l->used_size; ++i){
+    for (size_t i = 0; i < l->used_size; ++i){
         if (l->elements[i].syscall_id == id)
             return &l->elements[i];
     }
@@ -82,8 +82,7 @@ void print_stats_table(List *stats)
 
         double percent = total_time > 0 ? (e->time_spent / total_time) * 100.0 : 0;
         double avg = e->calls > 0 ? (e->time_spent / e->calls) * 1000.0 : 0;
-        double success = e->calls > 0 ? ((double)(e->calls - e->errs) / e->calls) * 100.0 : 0;
-
+        color(COL_YELLOW);
         printf("| %10.2f | %12.6f | %10d | %10d | %12.3f | %-20s |\n",
                percent,
                e->time_spent,
@@ -91,7 +90,9 @@ void print_stats_table(List *stats)
                e->errs,
                avg,
                e->syscall_name);
-    }
+        color(COL_RESET);
+     }
+
 
     printf("=====================================================================================================\n");
 
@@ -107,6 +108,9 @@ void print_stats_table(List *stats)
            "");
 
     printf("=====================================================================================================\n");
+    
+    color(COL_GREEN);
     printf("Success rate: %.2f%%\n", total_success);
+    color(COL_RESET);
 
 }

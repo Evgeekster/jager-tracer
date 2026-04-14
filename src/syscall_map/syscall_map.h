@@ -3,16 +3,7 @@
 #include <stdio.h>
 #include <string.h>
 
-extern const char* syscall_names_arr[];
-
-// enum arg_types {
-//     PARAM_INT,
-//     PARAM_STR,
-//     PARAM_PTR,
-//     PARAM_FLAGS,
-//     PARAM_FD
-// } arg_types;
-
+extern const char* syscall_names_arr[]; // AUTO-GENERATED, DO NOT CHANGE MANUALLY
 
 char* get_syscall_name(long sys_num);
 

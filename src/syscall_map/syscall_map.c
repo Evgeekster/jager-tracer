@@ -1,6 +1,11 @@
+/* AUTO-GENERATED — do not edit by hand.
+ * Regenerate with:  python3 scripts/gen_syscall_names.py
+ */
 #include "syscall_map.h"
+#include <stddef.h>
 
-const char* syscall_names_arr[] = { 
+
+extern const char* syscall_names_arr[] = { 
    [0] = "read",
    [1] = "write",
    [2] = "open",
@@ -336,69 +341,147 @@ const char* syscall_names_arr[] = {
    [332] = "statx",
    [333] = "io_pgetevents",
    [334] = "rseq",
-   [335] = "pidfd_send_signal",
-   [336] = "io_uring_setup",
-   [337] = "io_uring_enter",
-   [338] = "io_uring_register",
-   [339] = "open_tree",
-   [340] = "move_mount",
-   [341] = "fsopen",
-   [342] = "fsconfig",
-   [343] = "fsmount",
-   [344] = "fspick",
-   [345] = "pidfd_open",
-   [346] = "clone3",
-   [347] = "close_range",
-   [348] = "openat2",
-   [349] = "pidfd_getfd",
-   [350] = "faccessat2",
-   [351] = "process_madvise",
-   [352] = "epoll_pwait2",
-   [353] = "mount_setattr",
-   [354] = "quotactl_fd",
-   [355] = "landlock_create_ruleset",
-   [356] = "landlock_add_rule",
-   [357] = "landlock_restrict_self",
-   [358] = "memfd_secret",
-   [359] = "process_mrelease",
-   [360] = "futex_waitv",
-   [361] = "set_mempolicy_home_node",
-   [362] = "cachestat",
-   [363] = "fchmodat2",
-   [364] = "map_shadow_stack",
-   [365] = "futex_wake",
-   [366] = "futex_wait",
-   [367] = "futex_requeue",
-   [368] = "statmount",
-   [369] = "listmount",
-   [370] = "lsm_get_self_attr",
-   [371] = "lsm_set_self_attr",
-   [372] = "lsm_list_modules",
+   [335] = NULL,
+   [336] = NULL,
+   [337] = NULL,
+   [338] = NULL,
+   [339] = NULL,
+   [340] = NULL,
+   [341] = NULL,
+   [342] = NULL,
+   [343] = NULL,
+   [344] = NULL,
+   [345] = NULL,
+   [346] = NULL,
+   [347] = NULL,
+   [348] = NULL,
+   [349] = NULL,
+   [350] = NULL,
+   [351] = NULL,
+   [352] = NULL,
+   [353] = NULL,
+   [354] = NULL,
+   [355] = NULL,
+   [356] = NULL,
+   [357] = NULL,
+   [358] = NULL,
+   [359] = NULL,
+   [360] = NULL,
+   [361] = NULL,
+   [362] = NULL,
+   [363] = NULL,
+   [364] = NULL,
+   [365] = NULL,
+   [366] = NULL,
+   [367] = NULL,
+   [368] = NULL,
+   [369] = NULL,
+   [370] = NULL,
+   [371] = NULL,
+   [372] = NULL,
+   [373] = NULL,
+   [374] = NULL,
+   [375] = NULL,
+   [376] = NULL,
+   [377] = NULL,
+   [378] = NULL,
+   [379] = NULL,
+   [380] = NULL,
+   [381] = NULL,
+   [382] = NULL,
+   [383] = NULL,
+   [384] = NULL,
+   [385] = NULL,
+   [386] = NULL,
+   [387] = NULL,
+   [388] = NULL,
+   [389] = NULL,
+   [390] = NULL,
+   [391] = NULL,
+   [392] = NULL,
+   [393] = NULL,
+   [394] = NULL,
+   [395] = NULL,
+   [396] = NULL,
+   [397] = NULL,
+   [398] = NULL,
+   [399] = NULL,
+   [400] = NULL,
+   [401] = NULL,
+   [402] = NULL,
+   [403] = NULL,
+   [404] = NULL,
+   [405] = NULL,
+   [406] = NULL,
+   [407] = NULL,
+   [408] = NULL,
+   [409] = NULL,
+   [410] = NULL,
+   [411] = NULL,
+   [412] = NULL,
+   [413] = NULL,
+   [414] = NULL,
+   [415] = NULL,
+   [416] = NULL,
+   [417] = NULL,
+   [418] = NULL,
+   [419] = NULL,
+   [420] = NULL,
+   [421] = NULL,
+   [422] = NULL,
+   [423] = NULL,
+   [424] = "pidfd_send_signal",
+   [425] = "io_uring_setup",
+   [426] = "io_uring_enter",
+   [427] = "io_uring_register",
+   [428] = "open_tree",
+   [429] = "move_mount",
+   [430] = "fsopen",
+   [431] = "fsconfig",
+   [432] = "fsmount",
+   [433] = "fspick",
+   [434] = "pidfd_open",
+   [435] = "clone3",
+   [436] = "close_range",
+   [437] = "openat2",
+   [438] = "pidfd_getfd",
+   [439] = "faccessat2",
+   [440] = "process_madvise",
+   [441] = "epoll_pwait2",
+   [442] = "mount_setattr",
+   [443] = "quotactl_fd",
+   [444] = "landlock_create_ruleset",
+   [445] = "landlock_add_rule",
+   [446] = "landlock_restrict_self",
+   [447] = "memfd_secret",
+   [448] = "process_mrelease",
+   [449] = "futex_waitv",
+   [450] = "set_mempolicy_home_node",
+   [451] = "cachestat",
+   [452] = "fchmodat2",
+   [453] = "map_shadow_stack",
+   [454] = "futex_wake",
+   [455] = "futex_wait",
+   [456] = "futex_requeue",
+   [457] = "statmount",
+   [458] = "listmount",
+   [459] = "lsm_get_self_attr",
+   [460] = "lsm_set_self_attr",
+   [461] = "lsm_list_modules",
 };
 
-char* get_syscall_name(long sys_num)
-{   
-    char buffer[32];
+const size_t syscall_names_arr_size =
 
-    char command[512];
-    snprintf(command, sizeof(command), "python3 syscall_mapper.py %ld", sys_num);
-
-    FILE* pipe = popen(command, "r");
-    if (pipe == NULL) exit(1);
-    if (fgets(buffer, sizeof(buffer), pipe) == NULL){
-        // printf(buffer);
-        
-        exit(1);
-
-    }
-    buffer[strcspn(buffer, "\n")] = '\0';
-    pclose(pipe);
+    sizeof(syscall_names_arr) / sizeof(syscall_names_arr[0]);
 
 
-    char *result = malloc (strlen(buffer) + 1);
-    if (result) strcpy(result, buffer); 
+const char *syscall_name(long nr)
+{
+    if (nr < 0 || (size_t)nr >= syscall_names_arr_size)
 
+        return "unknown";
 
-    return result;
+    const char *n = syscall_names_arr[nr];
+
+    return n ? n : "unknown";
 }
-

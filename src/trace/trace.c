@@ -1,32 +1,42 @@
 #include "trace.h"
 
-void syscall_exit(struct user_regs_struct *regs, TableElement* t)
+void syscall_entry(pid_t pid, struct user_regs_struct *regs)
 {
+    // long l_syscall = SYSCALL_NUM;
+    char line[1024];
+    // const char *sys_name = syscall_names_arr[l_syscall];
+
+    syscall_format_entry(pid, regs, line, sizeof(line));
+    color(COL_CYAN);
+    fputs(line, stdout);
+    color(COL_RESET);
+    fputc('\n', stdout);
+
+}
+
+void syscall_exit(struct user_regs_struct *regs, TableElement* t)
+{   
     if ((long long)SYSCALL_RET < 0){
-        t->errs += 1;
-        if (showErrs){
-            printf(
-                "syscall %lld exited with code = %lld: %s\n",
-                SYSCALL_NUM,
-                -SYSCALL_RET,
-                strerror(-SYSCALL_RET)
+        t->errs++;
+        if (g_showErrs){
+
+            color(COL_RED);
+            fprintf(stderr, "   => error  %lld: %s\n",
+                  -SYSCALL_RET,
+                  strerror((int)-SYSCALL_RET)
             );
+            color(COL_RESET);
         }
+        // this is broken.. do i actually need it???
+        // else{
+        //     color(COL_MAGENTA);
+        //     printf("  = %lld\n", SYSCALL_RET);
+        //     color(COL_RESET);
+        // }
     }
 }
 
-void syscall_entry(pid_t pid, struct user_regs_struct *regs)
-{
-    long l_syscall = SYSCALL_NUM;
-    const char *sys_name = syscall_names_arr[l_syscall];
-    printf("\n[SYSCALL] %s | rdi=%lld | rsi=%p | rdx=%lld\n",
-        sys_name,
-        SYSCALL_ARG1,
-        (void*)SYSCALL_ARG2,
-        SYSCALL_ARG3
-    );
-    syscall_print(pid, regs, sys_name);
-}
+
 
 void trace_loop(pid_t pid, List* stats)
 {
@@ -110,6 +120,7 @@ void start_trace(char *prog, char **argv)
 
         trace_loop(pid, &stats);
     }
-    print_stats_table(&stats);
+    if (g_showTable)  print_stats_table(&stats);
+
     freeList(&stats);
 }

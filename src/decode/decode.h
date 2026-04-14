@@ -1,11 +1,22 @@
 #pragma once
+#define _GNU_SOURCE
 #include "syscall_map/syscall_map.h"
 #include "pch.h"
+#include <sys/uio.h>
+#include <sys/syscall.h>
 
+
+
+/*
+ * Fast path: process_vm_readv — one syscall, no word-by-word loop.
+ * Falls back to PTRACE_PEEKDATA if process_vm_readv fails (e.g. older kernels).
+ */
+
+ int fast_decode (pid_t pid, unsigned long addr, char* buffer, size_t max_size);
+ int deep_decode(pid_t pid, unsigned long addr, char* buffer, size_t max_size);
+
+
+/* 
+    this method calls decoders 
+*/
 int decode_str(pid_t pid, unsigned long addr, char* buffer, size_t max_size);
-
-
-// char* decode_read();
-// char* decode_write();
-// char* decode_openat();
-// char* decode_execve();
