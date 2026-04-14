@@ -18,6 +18,11 @@
 # Legacy
 legacy/
 
+#build 
+build/
+/build/
+
+
 # Python cache
 __pycache__/
 *.pyc
