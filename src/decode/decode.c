@@ -57,3 +57,27 @@ int decode_str(pid_t pid, unsigned long addr, char* buffer, size_t max_size)
     return deep_decode(pid, addr, buffer, max_size);
 }
 
+// int decode_sockaddr(pid_t pid, unsigned long addr, char* buffer, size_t max_size){
+//     struct socketaddr sa;
+
+    
+//     // for now just decode the whole struct as a string of bytes
+//     return decode_str(pid, addr, buffer, max_size);
+// }
+
+
+/* to decode memory without anything else/ WOuld be used to decode binary strings and *buf to be used later */
+int decode_mem(pid_t pid, unsigned long addr, void* buffer, size_t max_size){
+    struct iovec local  =    {    .iov_base = buffer,        .iov_len = max_size - 1};
+    struct iovec remote =    {    .iov_base = (void*)addr,   .iov_len = max_size - 1};
+    
+
+    ssize_t n = process_vm_readv(
+        pid, &local, 1, &remote, 1, 0
+    );
+
+    if (n < 0){
+        return -1; // error
+    }
+    return 0;
+}

@@ -7,6 +7,7 @@
 bool g_showErrs     = false;
 bool g_showTable    = true;
 bool g_color        = false;
+bool b_procTree     = false;
 
 void color(const char *c) {
     if (g_color) fputs(c, stdout);
@@ -47,7 +48,10 @@ int main(int argc, char* argv[]){
             break;
         case 'S':
             g_showTable = false;
-        
+            break;
+        case 't':
+            b_procTree = true;
+            break;
         default:
             break;
         }

@@ -2,19 +2,29 @@
 
 #define _POSIX_C_SOURCE 200809L
 
-#include <stdio.h>      
-#include <stdlib.h>     
-#include <unistd.h>     
+// system imoprts
 #include <sys/types.h>  
 #include <sys/wait.h>   
 #include <sys/ptrace.h>
 #include <sys/syscall.h>
 #include <sys/user.h>
+
+#include <stdio.h>      
+#include <stdlib.h>     
+#include <unistd.h>
 #include <signal.h>     
 #include <errno.h>
 #include <string.h>
 #include <stdbool.h>
 #include <time.h>
+
+
+
+//network imports
+#include <sys/socket.h>
+#include <arpa/inet.h>
+#include <sys/un.h>
+
 
 
 // to store all imports in one file accesable to all others
@@ -89,6 +99,11 @@
 extern bool g_showErrs;
 extern bool g_showTable;
 extern bool g_color;
+extern bool b_procTree;
+
+// networking
+extern bool b_parseTCPReqs;
+
 
 
 void color(const char *c);

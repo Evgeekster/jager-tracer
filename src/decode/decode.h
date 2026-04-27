@@ -20,3 +20,8 @@
     this method calls decoders 
 */
 int decode_str(pid_t pid, unsigned long addr, char* buffer, size_t max_size);
+
+/* ── Format a socket address ─────────────────────────────────────────── */
+// void fmt_sockaddr(char *buf, size_t sz, pid_t tracee, unsigned long val);
+// int decode_sockaddr(pid_t pid, unsigned long addr, char* buffer, size_t max_size);
+int decode_mem(pid_t pid, unsigned long addr, void* buffer, size_t max_size);
