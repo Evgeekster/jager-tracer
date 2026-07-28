@@ -1,6 +1,11 @@
 #pragma once
 #include "pch.h"
 
+#include "decode/decode.h"
+#include "net/network.h"
+#include <sys/mman.h>
+#include <fcntl.h>
+
 /*
  THE FOLLOWING CODE IS AI-GENERATED.
  my excuse - i wont be able to create this all on my own
@@ -70,6 +75,7 @@ typedef enum {
 typedef struct {
     ArgKind           kind;
     const NamedConst *consts;   /* for ARG_FLAGS / ARG_ENUM, else NULL */
+    int arg_idx;                 /* index of some SPECIAL argument that NEEDS to be handled */
 } ArgDesc;
 
 /* ── Descriptor for one syscall ──────────────────────────────────────── */

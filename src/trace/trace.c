@@ -60,6 +60,7 @@ void syscall_entry(pid_t pid, struct user_regs_struct *regs)
     fputs(line, stdout);
     color(COL_RESET);
     fputc('\n', stdout);
+    fflush(stdout);
 
 }
 
@@ -67,6 +68,8 @@ void syscall_exit(struct user_regs_struct *regs, TableElement* t)
 {   
     if ((long long)SYSCALL_RET < 0){
         t->errs++;
+        fprintf(stderr, "[DEBUG] retval=%lld\n", (long long)SYSCALL_RET);
+
         if (g_showErrs){
 
             color(COL_RED);
@@ -93,6 +96,7 @@ void trace_loop(TraceeList *tracees, List *stats)
             continue;
         }
 
+        // event handling
         int ev = status >> 8;
         if (ev == (SIGTRAP | (PTRACE_EVENT_FORK  << 8)) ||
             ev == (SIGTRAP | (PTRACE_EVENT_VFORK << 8)) ||
@@ -103,13 +107,27 @@ void trace_loop(TraceeList *tracees, List *stats)
             short is_thread = (ev == (SIGTRAP | (PTRACE_EVENT_CLONE << 8)));
             addTracee(tracees, (pid_t)new_pid, pid, is_thread);
             ptrace(PTRACE_SYSCALL, pid, 0, 0);
+            ptrace(PTRACE_SYSCALL, (pid_t)new_pid, 0, 0);
             continue;
         }
 
         if (ev == (SIGTRAP | (PTRACE_EVENT_EXEC << 8))) {
-            Tracee *tr = getTracee(tracees, pid);
-            if (tr) tr->in_syscall = 0;
+            // Tracee *tr = getTracee(tracees, pid);
+            // if (tr) tr->in_syscall = 0;
             ptrace(PTRACE_SYSCALL, pid, 0, 0);
+            continue;
+        }
+        else if (ev == (SIGTRAP | (PTRACE_EVENT_EXIT << 8))) {
+            Tracee *tr = getTracee(tracees, pid);
+            if (tr) tr->alive = 0;
+            ptrace(PTRACE_SYSCALL, pid, 0, 0);
+            continue;
+        }
+
+
+        int sig = WSTOPSIG(status);
+        if (sig != (SIGTRAP | 0x80)) {
+            ptrace(PTRACE_SYSCALL, pid, 0, sig);
             continue;
         }
 
@@ -182,7 +200,9 @@ void start_trace(char *prog, char **argv)
            PTRACE_O_TRACEVFORK |
            PTRACE_O_TRACECLONE |
            PTRACE_O_TRACEEXEC  |
-           PTRACE_O_TRACEEXIT);
+           PTRACE_O_TRACEEXIT  |
+           PTRACE_O_TRACESYSGOOD
+        );
 
     ptrace(PTRACE_SYSCALL, pid, 0, 0);
     addTracee(&tracees, pid, 0, 0);

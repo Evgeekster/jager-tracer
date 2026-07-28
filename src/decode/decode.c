@@ -68,6 +68,7 @@ int decode_str(pid_t pid, unsigned long addr, char* buffer, size_t max_size)
 
 /* to decode memory without anything else/ WOuld be used to decode binary strings and *buf to be used later */
 int decode_mem(pid_t pid, unsigned long addr, void* buffer, size_t max_size){
+    if (!buffer || max_size == 0) return -1;
     struct iovec local  =    {    .iov_base = buffer,        .iov_len = max_size - 1};
     struct iovec remote =    {    .iov_base = (void*)addr,   .iov_len = max_size - 1};
     

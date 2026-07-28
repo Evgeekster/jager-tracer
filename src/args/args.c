@@ -1,7 +1,5 @@
 #include "args.h"
-#include "decode/decode.h"
-#include <sys/mman.h>
-#include <fcntl.h>
+
 
 /* ══════════════════════════════════════════════════════════════════════
    Named-constant tables
@@ -228,96 +226,6 @@ static const NamedConst socket_proto[] = {
 #define AF(k, tbl)    { .kind = (k), .consts = (tbl) }
 
 
-// static const SyscallDesc syscall_table[] = {
-// /*  nr   name            argc  arg0              arg1                    arg2                    arg3  arg4  arg5  */
-//   {  0, "read",          3, { A(FD),             A(P),                   A(U)                                   } },
-//   {  1, "write",         3, { A(FD),             A(P),                   A(U)                                   } },
-//   {  2, "open",          3, { A(S),              AF(FL, open_flags),     AF(OC, mode_flags)                     } },
-//   {  3, "close",         1, { A(FD)                                                                             } },
-//   {  4, "stat",          2, { A(S),              A(P)                                                           } },
-//   {  5, "fstat",         2, { A(FD),             A(P)                                                           } },
-//   {  6, "lstat",         2, { A(S),              A(P)                                                           } },
-//   {  7, "poll",          3, { A(P),              A(U),                   A(I)                                   } },
-//   {  8, "lseek",         3, { A(FD),             A(I),                   AF(EN, whence_vals)                    } },
-//   {  9, "mmap",          6, { A(P),              A(U),                   AF(FL, mmap_prot),  AF(FL, mmap_flags), A(FD), A(I) } },
-//   { 10, "mprotect",      3, { A(P),              A(U),                   AF(FL, mmap_prot)                      } },
-//   { 11, "munmap",        2, { A(P),              A(U)                                                           } },
-//   { 12, "brk",           1, { A(P)                                                                              } },
-//   { 16, "ioctl",         3, { A(FD),             A(H),                   A(H)                                   } },
-//   { 17, "pread64",       4, { A(FD),             A(P),                   A(U),               A(I)               } },
-//   { 18, "pwrite64",      4, { A(FD),             A(P),                   A(U),               A(I)               } },
-//   { 19, "readv",         3, { A(FD),             A(P),                   A(I)                                   } },
-//   { 20, "writev",        3, { A(FD),             A(P),                   A(I)                                   } },
-//   { 21, "access",        2, { A(S),              AF(FL, access_modes)                                           } },
-//   { 22, "pipe",          1, { A(P)                                                                               } },
-//   { 32, "dup",           1, { A(FD)                                                                              } },
-//   { 33, "dup2",          2, { A(FD),             A(FD)                                                           } },
-//   { 39, "getpid",        0, { { 0 }                                                                              } },
-//   { 41, "socket",        3, { A(SD),   A(ST),   A(SP)                          } },
-//   { 42, "connect",       3, { A(FD),   A(SA),   A(SL)                          } },
-//   { 43, "accept",        3, { A(FD),   A(SA),   A(SL)                          } },
-//   { 44, "sendto",        6, { A(FD),   A(BUF),  A(SZ),   A(FL), A(SA), A(SL)  } },
-//   { 45, "recvfrom",      6, { A(FD),   A(BUF),  A(SZ),   A(FL), A(SA), A(SL)  } },
-//   { 46, "sendmsg",       3, { A(FD),   A(CM),   A(FL)                          } },
-//   { 47, "recvmsg",       3, { A(FD),   A(CM),   A(FL)                          } },
-//   { 48, "shutdown",      2, { A(FD),   A(EN)                                   } },
-//   { 49, "bind",          3, { A(FD),   A(SA),   A(SL)                          } },
-//   { 50, "listen",        2, { A(FD),   A(I)                                    } },
-//   { 51, "getsockname",   3, { A(FD),   A(SA),   A(SL)                          } },
-//   { 52, "getpeername",   3, { A(FD),   A(SA),   A(SL)                          } },
-//   { 53, "socketpair",    4, { A(SD),   A(ST),   A(SP),   A(P)                  } },
-//   { 54, "setsockopt",    5, { A(FD),   A(EN),   A(EN),   A(P),  A(SL)          } },
-//   { 55, "getsockopt",    5, { A(FD),   A(EN),   A(EN),   A(P),  A(SL)                                           } },
-//   { 45, "recvfrom",      6, { A(FD),             A(P),                   A(U),               A(I), A(P), A(P)   } },
-//   { 48, "shutdown",      2, { A(FD),             A(I)                                                           } },
-//   { 49, "bind",          3, { A(FD),             A(P),                   A(U)                                   } },
-//   { 50, "listen",        2, { A(FD),             A(I)                                                           } },
-//   { 56, "clone",         5, { AF(FL, clone_flags), A(P),                 A(P),               A(P), A(P)         } },
-//   { 57, "fork",          0, { { 0 }                                                                              } },
-//   { 58, "vfork",         0, { { 0 }                                                                              } },
-//   { 59, "execve",        3, { A(S),              A(P),                   A(P)                                   } },
-//   { 60, "exit",          1, { A(I)                                                                               } },
-//   { 61, "wait4",         4, { A(I),              A(P),                   A(I),               A(P)               } },
-//   { 62, "kill",          2, { A(I),              AF(EN, sig_vals)                                               } },
-//   { 72, "fcntl",         3, { A(FD),             A(I),                   A(I)                                   } },
-//   { 74, "fsync",         1, { A(FD)                                                                              } },
-//   { 75, "fdatasync",     1, { A(FD)                                                                              } },
-//   { 76, "truncate",      2, { A(S),              A(I)                                                           } },
-//   { 77, "ftruncate",     2, { A(FD),             A(I)                                                           } },
-//   { 78, "getdents",      3, { A(FD),             A(P),                   A(U)                                   } },
-//   { 79, "getcwd",        2, { A(P),              A(U)                                                           } },
-//   { 80, "chdir",         1, { A(S)                                                                               } },
-//   { 81, "fchdir",        1, { A(FD)                                                                              } },
-//   { 82, "rename",        2, { A(S),              A(S)                                                           } },
-//   { 83, "mkdir",         2, { A(S),              AF(OC, mode_flags)                                             } },
-//   { 84, "rmdir",         1, { A(S)                                                                               } },
-//   { 86, "link",          2, { A(S),              A(S)                                                           } },
-//   { 87, "unlink",        1, { A(S)                                                                               } },
-//   { 88, "symlink",       2, { A(S),              A(S)                                                           } },
-//   { 89, "readlink",      3, { A(S),              A(P),                   A(U)                                   } },
-//   { 90, "chmod",         2, { A(S),              AF(OC, mode_flags)                                             } },
-//   { 91, "fchmod",        2, { A(FD),             AF(OC, mode_flags)                                             } },
-//   { 95, "umask",         1, { AF(OC, mode_flags)                                                                 } },
-//   {102, "getuid",        0, { { 0 }                                                                              } },
-//   {104, "getgid",        0, { { 0 }                                                                              } },
-//   {217, "getdents64",    3, { A(FD),             A(P),                   A(U)                                   } },
-//   {231, "exit_group",    1, { A(I)                                                                               } },
-//   {257, "openat",        4, { AF(EN, at_flags),  A(S),                   AF(FL, open_flags), AF(OC, mode_flags) } },
-//   {258, "mkdirat",       3, { AF(EN, at_flags),  A(S),                   AF(OC, mode_flags)                     } },
-//   {260, "fchownat",      5, { AF(EN, at_flags),  A(S),                   A(U), A(U), A(I)                      } },
-//   {263, "unlinkat",      3, { AF(EN, at_flags),  A(S),                   A(I)                                   } },
-//   {264, "renameat",      4, { AF(EN, at_flags),  A(S),                   AF(EN, at_flags), A(S)                 } },
-//   {267, "readlinkat",    4, { AF(EN, at_flags),  A(S),                   A(P), A(U)                             } },
-//   {268, "fchmodat",      3, { AF(EN, at_flags),  A(S),                   AF(OC, mode_flags)                     } },
-//   {269, "faccessat",     3, { AF(EN, at_flags),  A(S),                   AF(FL, access_modes)                   } },
-//   {292, "dup3",          3, { A(FD),             A(FD),                  AF(FL, open_flags)                     } },
-//   {293, "pipe2",         2, { A(P),              AF(FL, open_flags)                                              } },
-//   {302, "prlimit64",     4, { A(I),              A(I),                   A(P), A(P)                             } },
-//   {318, "getrandom",     3, { A(P),              A(U),                   A(I)                                   } },
-//   {319, "memfd_create",  2, { A(S),              A(I)                                                           } },
-// };
-
-
 static const SyscallDesc syscall_table[] = {
 /*  nr   name            argc  arg0                    arg1                    arg2                      arg3              arg4   arg5  */
   {  0, "read",          3, { A(FD),              A(BUF),                A(SZ)                                                        } },
@@ -344,10 +252,10 @@ static const SyscallDesc syscall_table[] = {
   { 33, "dup2",          2, { A(FD),              A(FD)                                                                               } },
   { 39, "getpid",        0, { { 0 }                                                                                                    } },
   { 41, "socket", 3,    { AF(SD, socket_domain), AF(ST, socket_type),    AF(SP, socket_proto)                                           } },
-  { 42, "connect",       3, { A(FD),              A(SA),                 A(SL)                                                        } },
+  { 42, "connect",       3, { A(FD),              {.kind=SA, .arg_idx=2},                 A(SL)                                                        } },
   { 43, "accept",        3, { A(FD),              A(SA),                 A(SL)                                                        } },
-  { 44, "sendto",        6, { A(FD),              A(BUF),                A(SZ),              AF(FL, msg_flags),   A(SA),  A(SL)       } },
-  { 45, "recvfrom",      6, { A(FD),              A(BUF),                A(SZ),              AF(FL, msg_flags),   A(SA),  A(SL)       } },
+  { 44, "sendto",        6, { A(FD),              A(BUF),                A(SZ),           AF(FL, msg_flags),   A(SA),  A(SL)       } },
+  { 45, "recvfrom",      6, { A(FD),              A(BUF),                A(SZ),           AF(FL, msg_flags),   {.kind=SA, .arg_idx=5},  A(SL)       } },
   { 46, "sendmsg",       3, { A(FD),              A(CM),                 AF(FL, msg_flags)                                            } },
   { 47, "recvmsg",       3, { A(FD),              A(CM),                 AF(FL, msg_flags)                                            } },
   { 48, "shutdown",      2, { A(FD),              AF(EN, shutdown_how)                                                                } },
@@ -356,8 +264,10 @@ static const SyscallDesc syscall_table[] = {
   { 51, "getsockname",   3, { A(FD),              A(SA),                 A(SL)                                                        } },
   { 52, "getpeername",   3, { A(FD),              A(SA),                 A(SL)                                                        } },
   { 53, "socketpair",    4, { A(SD),              A(ST),                 A(SP),              A(P)                                     } },
-  { 54, "setsockopt",    5, { A(FD),              A(EN),                 A(EN),              A(P),                A(SL)               } },
-  { 55, "getsockopt",    5, { A(FD),              A(EN),                 A(EN),              A(P),                A(SL)               } },
+//   { 54, "setsockopt",    5, { A(FD),              A(EN),                 A(EN),              A(P),                A(SL)               } },
+//   { 55, "getsockopt",    5, { A(FD),              A(EN),                 A(EN),              A(P),                A(SL)               } }, // cannot be resolved without table of socket options, which is not implemented yet
+    { 54, "setsockopt", 5, { A(FD), A(I), A(I), A(P), A(SL) } },
+    { 55, "getsockopt", 5, { A(FD), A(I), A(I), A(P), A(SL) } },
   { 56, "clone",         5, { AF(FL, clone_flags), A(P),                 A(P),               A(P),                A(P)                } },
   { 57, "fork",          0, { { 0 }                                                                                                    } },
   { 58, "vfork",         0, { { 0 }                                                                                                    } },
@@ -441,6 +351,12 @@ static void fmt_flags(char *buf, size_t sz,
                       unsigned long long val,
                       const NamedConst *consts)
 {
+
+    if (!consts) {
+        snprintf(buf, sz, "%lld", (long long)(int)(unsigned int)val);
+        return;
+    }
+
     size_t pos = 0;
     unsigned long long remaining = val;
     bool first = true;
@@ -480,6 +396,11 @@ static void fmt_enum(char *buf, size_t sz,
                      unsigned long long val,
                      const NamedConst *consts)
 {
+    if (!consts) {
+        snprintf(buf, sz, "%lld", (long long)(int)(unsigned int)val);
+        return;
+    }
+
     long long sval   = (long long)val;
     long long sval32 = (long long)(int)(unsigned int)val; /* sign-extend low 32 bits */
 
@@ -495,44 +416,44 @@ static void fmt_enum(char *buf, size_t sz,
 
 /* NETWORKING FORMATTERS */
 
-static void fmt_sockaddr(char *buf, size_t sz, pid_t tracee,
-                  unsigned long addr, unsigned long addrlen)
-{
-    struct sockaddr_storage ss;
-    size_t to_read = addrlen < sizeof(ss) ? addrlen : sizeof(ss);
+// static void fmt_sockaddr(char *buf, size_t sz, pid_t tracee,
+//                   unsigned long addr, unsigned long addrlen)
+// {
+//     struct sockaddr_storage ss;
+//     size_t to_read = addrlen < sizeof(ss) ? addrlen : sizeof(ss);
 
-    if (addr == 0 || decode_mem(tracee, addr, (char*)&ss, to_read) < 0) {
-        snprintf(buf, sz, "0x%lx", addr);
-        return;
-    }
+//     if (addr == 0 || decode_mem(tracee, addr, (char*)&ss, to_read) < 0) {
+//         snprintf(buf, sz, "0x%lx", addr);
+//         return;
+//     }
 
-    struct sockaddr *sa = (struct sockaddr *)&ss;
+//     struct sockaddr *sa = (struct sockaddr *)&ss;
 
-    switch (sa->sa_family) {
-    case AF_INET: {
-        struct sockaddr_in *sin = (struct sockaddr_in *)sa;
-        char ip[INET_ADDRSTRLEN];
-        inet_ntop(AF_INET, &sin->sin_addr, ip, sizeof(ip));
-        snprintf(buf, sz, "{AF_INET, %s, %d}", ip, ntohs(sin->sin_port));
-        break;
-    }
-    case AF_INET6: {
-        struct sockaddr_in6 *sin6 = (struct sockaddr_in6 *)sa;
-        char ip[INET6_ADDRSTRLEN];
-        inet_ntop(AF_INET6, &sin6->sin6_addr, ip, sizeof(ip));
-        snprintf(buf, sz, "{AF_INET6, %s, %d}", ip, ntohs(sin6->sin6_port));
-        break;
-    }
-    case AF_UNIX: {
-        struct sockaddr_un *sun = (struct sockaddr_un *)sa;
-        snprintf(buf, sz, "{AF_UNIX, \"%s\"}", sun->sun_path);
-        break;
-    }
-    default:
-        snprintf(buf, sz, "{sa_family=%d}", sa->sa_family);
-        break;
-    }
-}
+//     switch (sa->sa_family) {
+//     case AF_INET: {
+//         struct sockaddr_in *sin = (struct sockaddr_in *)sa;
+//         char ip[INET_ADDRSTRLEN];
+//         inet_ntop(AF_INET, &sin->sin_addr, ip, sizeof(ip));
+//         snprintf(buf, sz, "{AF_INET, %s, %d}", ip, ntohs(sin->sin_port));
+//         break;
+//     }
+//     case AF_INET6: {
+//         struct sockaddr_in6 *sin6 = (struct sockaddr_in6 *)sa;
+//         char ip[INET6_ADDRSTRLEN];
+//         inet_ntop(AF_INET6, &sin6->sin6_addr, ip, sizeof(ip));
+//         snprintf(buf, sz, "{AF_INET6, %s, %d}", ip, ntohs(sin6->sin6_port));
+//         break;
+//     }
+//     case AF_UNIX: {
+//         struct sockaddr_un *sun = (struct sockaddr_un *)sa;
+//         snprintf(buf, sz, "{AF_UNIX, \"%s\"}", sun->sun_path);
+//         break;
+//     }
+//     default:
+//         snprintf(buf, sz, "{sa_family=%d}", sa->sa_family);
+//         break;
+//     }
+// }
 
 /* Public: format one argument */
 void arg_format(char *buf, size_t sz,
@@ -570,9 +491,13 @@ void arg_format(char *buf, size_t sz,
     case ARG_FD:
         snprintf(buf, sz, "%lld", (long long)val);
         break;
-    case ARG_SOCKADDR:
-        fmt_sockaddr(buf, sz, tracee, (unsigned long)val, (unsigned long)REG_ARG(*regs, 2));
+    case ARG_SOCKADDR: {
+        unsigned long addrlen = (desc->arg_idx >= 0)
+            ? (unsigned long)REG_ARG(*regs, desc->arg_idx)
+            : 0;
+        fmt_sockaddr(tracee, (unsigned long)val, (socklen_t)addrlen, buf, sz);
         break;
+    }
 
     case ARG_STR: {
         char tmp[256];
@@ -606,7 +531,12 @@ void arg_format(char *buf, size_t sz,
     case ARG_ENUM:
         fmt_enum(buf, sz, val, desc->consts);
         break;
-
+    case ARG_SOCKDOM:
+        fmt_enum(buf, sz, val, desc->consts);
+        break;
+    case ARG_SOCKTYPE:
+        fmt_enum(buf, sz, val, desc->consts);
+        break;
     default:
         snprintf(buf, sz, "0x%llx", val);
         break;
