@@ -1,7 +1,7 @@
 CC      = gcc
 TARGET  = build/jagertrace
 CFLAGS  = -Wall -Wextra \
-          -Isrc -Isrc/util -Isrc/trace -Isrc/syscall_map -Isrc/decode -Isrc/net  -Isrc/args 
+          -Isrc -Isrc/util -Isrc/trace -Isrc/syscall_map -Isrc/decode -Isrc/net -Isrc/args
 
 SRCS    = src/main.c \
           src/trace/trace.c \
@@ -9,21 +9,29 @@ SRCS    = src/main.c \
           src/net/network.c \
           src/decode/decode.c \
           src/util/util.c \
-          src/args/args.c 
-
+          src/args/args.c
 
 OBJS    = $(patsubst src/%.c, build/%.o, $(SRCS))
+
+GEN_SCRIPT = scripts/py/syscall_map.py
+GEN_TARGET = src/syscall_map/syscall_map.c
+
+.PHONY: all clean gen
+
+all: gen $(TARGET)
+
+gen: $(GEN_TARGET)
+
+# regenerate only if the script itself changed, or the file doesn't exist yet
+$(GEN_TARGET): $(GEN_SCRIPT)
+	python3 $(GEN_SCRIPT) --out $(GEN_TARGET)
 
 $(TARGET): $(OBJS)
 	$(CC) $(CFLAGS) $(OBJS) -o $(TARGET)
 
-build/%.o: src/%.c | build
+build/%.o: src/%.c
+	@mkdir -p $(dir $@)
 	$(CC) $(CFLAGS) -c $< -o $@
-
-build:
-	mkdir -p build/trace build/syscall_map build/decode build/util build/net build/args 
 
 clean:
 	rm -rf build/
-
-.PHONY: clean

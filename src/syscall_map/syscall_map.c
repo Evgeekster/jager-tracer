@@ -3,7 +3,7 @@
  */
 #include "syscall_map.h"
 #include <stddef.h>
-// 
+
 
 extern const char* syscall_names_arr[] = { 
    [0] = "read",
@@ -475,8 +475,11 @@ const size_t syscall_names_arr_size =
     sizeof(syscall_names_arr) / sizeof(syscall_names_arr[0]);
 
 
+
 const char *syscall_name(long nr)
+
 {
+
     if (nr < 0 || (size_t)nr >= syscall_names_arr_size)
 
         return "unknown";
@@ -484,4 +487,8 @@ const char *syscall_name(long nr)
     const char *n = syscall_names_arr[nr];
 
     return n ? n : "unknown";
+
 }
+
+    
+    
