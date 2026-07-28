@@ -35,7 +35,7 @@ build/jagertrace -e cat /etc/passwd
 
 ## Architecture
 
-Tested on **x86_64**. ARM and AArch64 support is present in the code (`pch.h`) but untested.
+Tested on **x86_64**. ARM and AArch64 support is started  in the code (`pch.h`) but untested and is not expected to function.
 
 ## Project structure
 
@@ -46,12 +46,13 @@ src/
 ├── trace/              — main ptrace loop, syscall entry/exit handling
 ├── decode/             — reads string arguments from tracee memory
 ├── syscall_map/        — syscall number → name table
-└── util/               — dynamic list, stats table output
+├── util/               — dynamic list, stats table output
+└── net/                — networking (to be implemented)
 ```
 
 ## Dependencies
 
-Standard Linux library only. Requires a kernel with `ptrace` support.
+Python3 & Standard Linux library only. Requires a kernel with `ptrace` support.
 
 ## Afterwards
 
