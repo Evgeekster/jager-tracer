@@ -64,12 +64,12 @@ void syscall_entry(pid_t pid, struct user_regs_struct *regs)
 
 }
 
-void syscall_exit(struct user_regs_struct *regs, TableElement* t)
+void syscall_exit(struct user_regs_struct *regs, TableElement* t, long nr, pid_t pid, Tracee **tr)
 {   
     if ((long long)SYSCALL_RET < 0){
         t->errs++;
-        fprintf(stderr, "[DEBUG] retval=%lld\n", (long long)SYSCALL_RET);
-
+        // fprintf(stderr, "[DEBUG] retval=%lld\n", (long long)SYSCALL_RET);
+        syscall_format_exit(pid, regs, NULL, (*tr)->pending_line, sizeof((*tr)->pending_line));
         if (g_showErrs){
 
             color(COL_RED);
@@ -162,7 +162,7 @@ void trace_loop(TraceeList *tracees, List *stats)
             clock_gettime(CLOCK_MONOTONIC, &time_end);
             t->time_spent += (double)(time_end.tv_sec  - tr->call_start.tv_sec)
                            + (time_end.tv_nsec - tr->call_start.tv_nsec) / 1e9;
-            syscall_exit(&regs, t);
+            syscall_exit(&regs, t, regs.orig_rax, pid, &tr);
             tr->in_syscall = 0;
         }
 

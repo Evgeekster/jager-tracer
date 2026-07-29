@@ -13,6 +13,10 @@ typedef struct  {
     int                 is_thread; 
     pid_t               parent_pid; 
     short               alive; // 0 if dead 
+
+
+    char                pending_line[1024]; // buffer for syscall line to print on exit
+    long                pending_syscall_num; // syscall number to print on exit
 }Tracee;
 
 typedef struct {
@@ -32,7 +36,7 @@ void trace_loop(TraceeList *tracees, List *stats);
 
 void syscall_entry(pid_t pid, struct user_regs_struct *regs);
 
-void syscall_exit(struct user_regs_struct *regs, TableElement* t);
+void syscall_exit(struct user_regs_struct *regs, TableElement* t, long nr, pid_t pid, Tracee **tr);
 
 void start_trace(char* prog, char** argv);
 

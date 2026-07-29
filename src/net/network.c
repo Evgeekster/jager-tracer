@@ -21,7 +21,7 @@ void fmt_sockaddr(pid_t pid, unsigned long addr_ptr, socklen_t addr_len,
         struct sockaddr_in *sin = (struct sockaddr_in *)&ss;
         char ip[INET_ADDRSTRLEN];
         inet_ntop(AF_INET, &sin->sin_addr, ip, sizeof(ip));
-        snprintf(out, out_size, "{AF_INET, %s, %d}", ip, ntohs(sin->sin_port));
+        snprintf(out, out_size, "{AF_INET, %s:%d}", ip, ntohs(sin->sin_port));
         break;
     }
     case AF_INET6: {

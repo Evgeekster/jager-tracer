@@ -8,8 +8,9 @@ SRCS    = src/main.c \
           src/syscall_map/syscall_map.c \
           src/net/network.c \
           src/decode/decode.c \
+          src/args/sockopt_names.c \
           src/util/util.c \
-          src/args/args.c
+          src/args/args.c 
 
 OBJS    = $(patsubst src/%.c, build/%.o, $(SRCS))
 

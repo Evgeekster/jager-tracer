@@ -2,9 +2,15 @@
 
 #include <netinet/in.h>
 #include <sys/un.h>
+#include <sys/socket.h>
+#include <arpa/inet.h>
+#include <netinet/tcp.h>
 #include <arpa/inet.h>
 
 #include "decode/decode.h"
 
 void fmt_sockaddr(pid_t pid, unsigned long addr_ptr, socklen_t addr_len,
                      char *out, size_t out_size);
+
+void fmt_socklen(pid_t pid, unsigned long addr_ptr, socklen_t addr_len,
+                     char *out, size_t out_size); // usable?? 
